@@ -67,6 +67,7 @@ erDiagram
         uuid id PK
         string isbn
         string title
+        string description
         int year
     }
     AUTHOR {

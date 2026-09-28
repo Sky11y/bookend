@@ -1,6 +1,8 @@
 /*
 !src
+!migrations
 !Cargo.lock
 !Cargo.toml
 !LICENSE
 !README.md
+!docker-compose.yaml
