@@ -16,11 +16,20 @@ This project...
 
 ### Tools
 
-- Axum -
-- Tokio -
-- Serde -
-- sqlx -
-- Tower-http -
+**Web framework and runtime**
+- **axum** - HTTP routing and Request handling
+- **tokio** - Async runtime
+- **tower-http** - Prebuilt middleware
+
+**Data**
+- **sqlx** - Async PostgreSQL driver
+- **serde** - Serialization/deserialization framework
+    - **serde_json** - Serde implementation for JSON
+
+**Utilities**
+- **uuid** - Generating and parsing UUIDs
+- **thiserror** - Convenient derive macros for error handling
+- **dotenvy** - Environment variable loading
 
 ## Getting started
 
