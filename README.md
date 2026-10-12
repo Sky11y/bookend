@@ -134,6 +134,9 @@ erDiagram
     - allows analytics, if that is preferred.
 - Junction table for AUTHOR and BOOK instead of author list on book
     - forced decision by many-to-many relationship
+- ModelController to handle all the database queries
+    - Handlers are small and go through Controller methods instead of issuing sqlx calls directly
+    - confines SQL to one place
 
 
 ## Roadmap
