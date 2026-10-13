@@ -15,17 +15,18 @@ mod models;
 use crate::error::{Error, Result, log_app_errors};
 use crate::models::{Book, ModelController};
 
-async fn get_books(State(mc): State<ModelController>) -> Result<Json<Vec<Book>>> {
-    println!("  >>> {:<10} - get_books", "HANDLER");
+async fn list_books(State(mc): State<ModelController>) -> Result<Json<Vec<Book>>> {
+    println!("  >>> {:<10} - list_books", "HANDLER");
 
     let books = mc.list_books().await?;
     Ok(Json(books))
 }
 
-async fn hello_world() -> Result<&'static str> {
-    println!("  >>> {:<10} - hello_world", "HANDLER");
+async fn get_book(State(mc): State<ModelController>, Path(id): Path<i64>) -> Result<Json<Book>> {
+    println!("  >>> {:<10} - get_book", "HANDLER");
 
-    Ok("Hello World!")
+    let book = mc.get_book(id).await?;
+    Ok(Json(book))
 }
 
 #[tokio::main]
@@ -59,9 +60,16 @@ async fn main() -> Result<()> {
 fn build_router(mc: ModelController) -> Router {
     Router::new()
         .route("/", get(hello_world))
-        .route("/books", get(get_books))
+        .route("/books", get(list_books))
+        .route("/books/{id}", get(get_book))
         .layer(from_fn(log_app_errors))
         .with_state(mc)
+}
+
+async fn hello_world() -> Result<&'static str> {
+    println!("  >>> {:<10} - hello_world", "HANDLER");
+
+    Ok("Hello World!")
 }
 
 #[cfg(test)]

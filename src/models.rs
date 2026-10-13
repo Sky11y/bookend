@@ -1,6 +1,6 @@
-use crate::Result;
+use crate::{Error, Result};
 use serde::Serialize;
-use sqlx::PgPool;
+use sqlx::{PgPool, query_as};
 use uuid::Uuid;
 
 #[derive(Debug, Clone)]
@@ -14,13 +14,20 @@ impl ModelController {
     }
 
     pub async fn list_books(&self) -> Result<Vec<Book>> {
-        Ok(sqlx::query_as::<_, Book>("SELECT * FROM books ORDER BY id")
+        Ok(query_as!(Book, "SELECT * FROM books ORDER BY id")
             .fetch_all(&self.db)
             .await?)
     }
+
+    pub async fn get_book(&self, id: i64) -> Result<Book> {
+        query_as!(Book, "SELECT * FROM books WHERE id = $1", id)
+            .fetch_optional(&self.db)
+            .await?
+            .ok_or(Error::NotFound)
+    }
 }
 
-#[derive(Debug, Serialize, sqlx::FromRow)]
+#[derive(Debug, Serialize)]
 pub struct Book {
     id: i64,
     isbn: String,
