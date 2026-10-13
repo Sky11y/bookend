@@ -22,7 +22,7 @@ impl ModelController {
 
 #[derive(Debug, Serialize, sqlx::FromRow)]
 pub struct Book {
-    id: i32,
+    id: i64,
     isbn: String,
     title: String,
     description: String,
