@@ -1,5 +1,5 @@
-use crate::{Error, Result};
-use serde::Serialize;
+use crate::error::{Error, Result};
+use serde::{Deserialize, Serialize};
 use sqlx::{PgPool, query_as};
 use uuid::Uuid;
 
@@ -27,7 +27,7 @@ impl ModelController {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Book {
     id: i64,
     isbn: String,

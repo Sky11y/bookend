@@ -1,5 +1,5 @@
 [package]
-name = "backend-axum"
+name = "bookend"
 version = "0.1.0"
 edition = "2024"
 
@@ -12,3 +12,6 @@ sqlx = { version = "0.9.0", features = ["runtime-tokio", "postgres", "macros", "
 thiserror = "2.0"
 tokio = { version = "1.53.1", features = ["full"] }
 uuid = "1.26.1"
+
+[dev-dependencies]
+tower = { version = "0.5.3", features = ["util"] }
