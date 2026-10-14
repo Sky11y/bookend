@@ -45,6 +45,11 @@ This project...
 
 ... (env)
 
+**Recommended**: Copy the git-hook script to git hooks directory to keep the sqlx offline query cache updated. Without it run `cargo sqlx prepare` manually after changing queries or CI will fail. 
+```shell
+cp scripts/pre-commit .git/hooks/ && chmod +x .git/hooks/pre-commit
+```
+
 ### Running
 
 ...

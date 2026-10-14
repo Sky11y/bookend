@@ -1,9 +1,24 @@
+# Ignore all
 /*
+
+# Project building and testing
 !src
+!tests
 !migrations
+!scripts
+!docker-compose.yaml
+
+# CI
+!.github
+!.sqlx
+
+# Version handling
 !Cargo.lock
 !Cargo.toml
+
+# Documentation
 !LICENSE
 !README.md
-!docker-compose.yaml
-!.sqlx
+
+# Other
+!.gitignore

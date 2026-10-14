@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+# Description: keep the sqlx offline cache in sync with the commit
+
+# only run this script if changes outside documentation
+if git diff --cached --quiet -- .sqlx/ src/ migrations/; then
+    echo ">>> pre-commit: no query/schema changes staged, skipping sqlx prepare"
+    exit 0
+fi
+
+echo ">>> pre-commit: running cargo sqlx prepare..."
+if ! cargo sqlx prepare; then
+    echo "!!! sqlx prepare failed (is your dev database up and migrated?)"
+    echo "!!! fix the issue, or bypass with --no-verify if intentional"
+    exit 1
+fi
+
+if git diff --quiet -- .sqlx/ && git diff --cached --quiet -- .sqlx/; then
+    echo ">>> pre-commit: cache already up to date"
+else
+    git add .sqlx/
+    echo ">>> pre-commit: updated .sqlx cache staged into this commit"
+fi
+exit 0
