@@ -3,7 +3,7 @@
 # Description: keep the sqlx offline cache in sync with the commit
 
 # only run this script if changes outside documentation
-if git diff --cached --quiet -- .sqlx/ src/ migrations/; then
+if git diff --cached --quiet -- .sqlx/ src/ /tests/ migrations/; then
     echo ">>> pre-commit: no query/schema changes staged, skipping sqlx prepare"
     exit 0
 fi
