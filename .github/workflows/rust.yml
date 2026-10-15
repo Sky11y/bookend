@@ -31,6 +31,7 @@ jobs:
 
     env:
       DATABASE_URL: postgres://postgres:postgres@localhost:5432/bookend_test
+      SQLX_OFFLINE: "true"
 
     steps:
     - name: Check out repository code
