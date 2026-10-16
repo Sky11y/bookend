@@ -1,7 +1,7 @@
 use crate::error::{Error, Result};
 use serde::{Deserialize, Serialize};
 use sqlx::{PgPool, query_as};
-use uuid::Uuid;
+// use uuid::Uuid;
 
 #[derive(Debug, Clone)]
 pub struct ModelController {
