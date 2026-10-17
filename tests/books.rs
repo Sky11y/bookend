@@ -1,6 +1,6 @@
 #![allow(unused)]
 use bookend::{
-    models::{Book, ModelController},
+    models::{Book, BookForCreate, ModelController},
     router::build_router,
 };
 
@@ -24,7 +24,7 @@ async fn get_response(app: Router, uri: &str) -> Response<Body> {
         .unwrap()
 }
 
-async fn post_response<T: Serialize>(app: Router, uri: String, payload: &T) -> Response<Body> {
+async fn post_response<T: Serialize>(app: Router, uri: &str, payload: &T) -> Response<Body> {
     let json = serde_json::to_string(payload).expect("serialize payload");
     app.oneshot(
         Request::post(uri)
@@ -71,7 +71,7 @@ async fn get_books_ok_all_books(pool: PgPool) {
 async fn get_books_id_ok_seeded_book(pool: PgPool) {
     let app = spawn_app(pool.clone());
     let id = sqlx::query_scalar!(
-        r#"INSERT INTO books (isbn, title, description, published) VALUES ($1, $2, $3, $4) RETURNING id"#,
+        "INSERT INTO books (isbn, title, description, published) VALUES ($1, $2, $3, $4) RETURNING id",
         "1234567890",
         "Test",
         "Testcription",
@@ -110,4 +110,19 @@ async fn get_books_invalid_id_err_404(pool: PgPool) {
 
     let response = get_response(app, "/books/9999").await;
     assert_eq!(response.status(), StatusCode::NOT_FOUND);
+}
+
+#[sqlx::test]
+async fn books_post_ok(pool: PgPool) {
+    let app = spawn_app(pool);
+
+    let book = json!({
+        "isbn": "123456879",
+        "title": "Test",
+        "description": "Testcription",
+        "published": 2026
+    });
+
+    let response = post_response(app, "/books", &book).await;
+    assert_eq!(response.status(), StatusCode::CREATED);
 }

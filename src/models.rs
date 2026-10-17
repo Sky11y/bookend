@@ -1,7 +1,8 @@
-use crate::error::{Error, Result};
 use serde::{Deserialize, Serialize};
-use sqlx::{PgPool, query_as};
+use sqlx::{PgPool, query_as, query_scalar};
 // use uuid::Uuid;
+
+use crate::error::{Error, Result};
 
 #[derive(Debug, Clone)]
 pub struct ModelController {
@@ -25,11 +26,33 @@ impl ModelController {
             .await?
             .ok_or(Error::NotFound)
     }
+
+    pub async fn create_book(&self, book: BookForCreate) -> Result<i64> {
+        let id = query_scalar!("INSERT INTO books (isbn, title, description, published) VALUES ($1, $2, $3, $4) RETURNING id",
+        book.isbn,
+        book.title,
+        book.description,
+        book.published
+        )
+        .fetch_one(&self.db)
+        .await?;
+
+        Ok(id)
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Book {
     id: i64,
+    isbn: String,
+    title: String,
+    description: String,
+    published: i32,
+}
+
+// TODO: At least description should be Option
+#[derive(Debug, Deserialize)]
+pub struct BookForCreate {
     isbn: String,
     title: String,
     description: String,

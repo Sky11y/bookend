@@ -2,7 +2,7 @@ use axum::{
     Json, Router,
     http::{StatusCode, Uri},
     middleware::from_fn,
-    response::{IntoResponse, Response},
+    response::IntoResponse,
 };
 use serde_json::json;
 
@@ -20,10 +20,9 @@ pub fn build_router(mc: ModelController) -> Router {
         .fallback(fallback)
 }
 
-async fn fallback(uri: Uri) -> Response {
+async fn fallback(uri: Uri) -> impl IntoResponse {
     (
         StatusCode::NOT_FOUND,
         Json(json!({"error": format!("Not found {uri}")})),
     )
-        .into_response()
 }

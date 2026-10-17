@@ -1,15 +1,17 @@
 use axum::{
     Json, Router,
     extract::{Path, State},
+    http::StatusCode,
+    response::{IntoResponse, Response},
     routing::get,
 };
 
 use crate::error::Result;
-use crate::models::{Book, ModelController};
+use crate::models::{Book, BookForCreate, ModelController};
 
 pub fn routes_books() -> Router<ModelController> {
     Router::new()
-        .route("/", get(list_books))
+        .route("/", get(list_books).post(create_book))
         .route("/{id}", get(get_book))
 }
 
@@ -25,4 +27,15 @@ async fn get_book(State(mc): State<ModelController>, Path(id): Path<i64>) -> Res
 
     let book = mc.get_book(id).await?;
     Ok(Json(book))
+}
+
+async fn create_book(
+    State(mc): State<ModelController>,
+    Json(book): Json<BookForCreate>,
+) -> Result<Response> {
+    println!("  >>> {:<10} - create_book", "HANDLER");
+
+    // TODO: Book creation return id. Do I want to do anything with it?
+    let _id = mc.create_book(book).await?;
+    Ok((StatusCode::CREATED).into_response())
 }
