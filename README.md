@@ -35,28 +35,66 @@ This project...
 
 ### Prerequisites and Dependencies
 
-...
+**Docker** and **Docker compose**
+Rust toolchain: **rustc** and **Cargo**)
 
 ### Installation
 
-... (docker)
+Clone the repository and cd into it
+```sh
+git clone https://github.com/Sky11y/bookend
+cd bookend
+```
 
 ### Configuration
 
-... (env)
+Copy (or rename) the *.env.example* file in the repository root with name
+*.env*. This is the file the server and database reads when building the
+project. Modify the file with your own values or use as is for testing.
+```sh
+cp .env.example .env
+# OR
+mv .env.example .env
+```
 
-**Recommended**: Copy the git-hook script to git hooks directory to keep the sqlx offline query cache updated. Without it run `cargo sqlx prepare` manually after changing queries or CI will fail. 
+**Recommended**: Copy the git-hook script to git hooks directory to keep the
+sqlx offline query cache updated. Without it run `cargo sqlx prepare` manually
+after changing queries or CI will fail. 
 ```shell
 cp scripts/pre-commit .git/hooks/ && chmod +x .git/hooks/pre-commit
 ```
 
 ### Running
 
-...
+1. Bring the database up in detached mode
+```sh
+docker compose up -d
+```
+2. Run the server
+```sh
+# For development build
+cargo run
+# For release build
+cargo run --release
+```
+
+**Stop the server and bring database down**
+1. Use Ctrl+c on the terminal to stop the server.
+2. `docker compose down -v` to bring the database down with the volumes.
 
 ### Running tests
 
-...
+To run all the tests
+```sh
+cargo test
+```
+
+To run only a particular tests
+```sh
+cargo test <name>
+# For example
+cargo test books
+```
 
 ## Documentation
 
