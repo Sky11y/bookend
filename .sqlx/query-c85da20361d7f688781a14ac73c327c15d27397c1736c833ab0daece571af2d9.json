@@ -1,0 +1,79 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO books (isbn, title, description, published) VALUES ($1, $2, $3, $4) RETURNING *",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "books",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "isbn",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "books",
+            "name": "isbn"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "title",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "books",
+            "name": "title"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "description",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "books",
+            "name": "description"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "published",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "books",
+            "name": "published"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Text",
+        "Text",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "c85da20361d7f688781a14ac73c327c15d27397c1736c833ab0daece571af2d9"
+}

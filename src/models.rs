@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use sqlx::{PgPool, query_as, query_scalar};
+use sqlx::{PgPool, query, query_as};
 // use uuid::Uuid;
 
 use crate::error::{Error, Result};
@@ -27,8 +27,8 @@ impl ModelController {
             .ok_or(Error::NotFound)
     }
 
-    pub async fn create_book(&self, book: BookForCreate) -> Result<i64> {
-        let id = query_scalar!("INSERT INTO books (isbn, title, description, published) VALUES ($1, $2, $3, $4) RETURNING id",
+    pub async fn create_book(&self, book: BookForCreate) -> Result<Book> {
+        let book = query_as!(Book, "INSERT INTO books (isbn, title, description, published) VALUES ($1, $2, $3, $4) RETURNING *",
         book.isbn,
         book.title,
         book.description,
@@ -37,7 +37,19 @@ impl ModelController {
         .fetch_one(&self.db)
         .await?;
 
-        Ok(id)
+        Ok(book)
+    }
+
+    pub async fn delete_book(&self, id: i64) -> Result<()> {
+        let result = query!("DELETE FROM books WHERE id = $1", id)
+            .execute(&self.db)
+            .await?;
+
+        if result.rows_affected() == 0 {
+            return Err(Error::NotFound);
+        }
+
+        Ok(())
     }
 }
 

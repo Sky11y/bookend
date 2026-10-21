@@ -12,7 +12,7 @@ use crate::models::{Book, BookForCreate, ModelController};
 pub fn routes_books() -> Router<ModelController> {
     Router::new()
         .route("/", get(list_books).post(create_book))
-        .route("/{id}", get(get_book))
+        .route("/{id}", get(get_book).delete(delete_book))
 }
 
 async fn list_books(State(mc): State<ModelController>) -> Result<Json<Vec<Book>>> {
@@ -36,6 +36,13 @@ async fn create_book(
     println!("  >>> {:<10} - create_book", "HANDLER");
 
     // TODO: Book creation return id. Do I want to do anything with it?
-    let _id = mc.create_book(book).await?;
+    let _book = mc.create_book(book).await?;
     Ok((StatusCode::CREATED).into_response())
+}
+
+async fn delete_book(State(mc): State<ModelController>, Path(id): Path<i64>) -> Result<()> {
+    println!("  >>> {:<10} - delete_book", "HANDLER");
+
+    mc.delete_book(id).await?;
+    Ok(())
 }

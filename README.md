@@ -35,8 +35,8 @@ This project...
 
 ### Prerequisites and Dependencies
 
-**Docker** and **Docker compose**
-Rust toolchain: **rustc** and **Cargo**)
+- **Docker** and **Docker compose**
+- Rust toolchain: **rustc** and **Cargo**)
 
 ### Installation
 
