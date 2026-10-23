@@ -32,12 +32,11 @@ async fn get_book(State(mc): State<ModelController>, Path(id): Path<i64>) -> Res
 async fn create_book(
     State(mc): State<ModelController>,
     Json(book): Json<BookForCreate>,
-) -> Result<Response> {
+) -> Result<(StatusCode, Json<Book>)> {
     println!("  >>> {:<10} - create_book", "HANDLER");
 
-    // TODO: Book creation return id. Do I want to do anything with it?
-    let _book = mc.create_book(book).await?;
-    Ok((StatusCode::CREATED).into_response())
+    let book = mc.create_book(book).await?;
+    Ok((StatusCode::CREATED, Json(book)))
 }
 
 async fn delete_book(State(mc): State<ModelController>, Path(id): Path<i64>) -> Result<()> {

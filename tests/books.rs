@@ -1,87 +1,13 @@
-#![allow(unused)]
-use bookend::{
-    models::{Book, BookForCreate, ModelController},
-    router::build_router,
-};
+use bookend::models::Book;
 
-use axum::{
-    Router,
-    body::Body,
-    http::{self, Request, Response, StatusCode},
-};
-use serde::Serialize;
-use serde_json::{Value, json};
+use axum::http::StatusCode;
+use serde_json::json;
 use sqlx::PgPool;
-use tower::ServiceExt; // for `oneshot`
 
-enum Method {
-    Get,
-    Post(Value),
-    Put,
-    Delete,
-}
-
-fn spawn_app(pool: PgPool) -> Router {
-    build_router(ModelController::new(pool))
-}
-
-async fn response(app: Router, uri: &str, method: Method) -> Response<Body> {
-    match method {
-        Method::Get => app
-            .oneshot(Request::get(uri).body(Body::empty()).unwrap())
-            .await
-            .unwrap(),
-        Method::Post(payload) => {
-            let json = serde_json::to_string(&payload).expect("serialize payload");
-            app.oneshot(
-                Request::post(uri)
-                    .header(http::header::CONTENT_TYPE, "Application/json")
-                    .body(Body::from(json))
-                    .unwrap(),
-            )
-            .await
-            .unwrap()
-        }
-        Method::Put => app
-            .oneshot(Request::put(uri).body(Body::empty()).unwrap())
-            .await
-            .unwrap(),
-        Method::Delete => app
-            .oneshot(Request::delete(uri).body(Body::empty()).unwrap())
-            .await
-            .unwrap(),
-    }
-}
-
-fn create_mock_payload() -> Value {
-    json!({
-        "isbn": "1234567890",
-        "title": "Test",
-        "description": "Testcription",
-        "published": 2026
-    })
-}
-
-async fn seed_mock_book(pool: PgPool) -> Value {
-    let id = sqlx::query_scalar!(
-        "INSERT INTO books (isbn, title, description, published) VALUES ($1, $2, $3, $4) RETURNING id",
-        "1234567890",
-        "Test",
-        "Testcription",
-        2026
-        )
-        .fetch_one(&pool)
-        .await
-        .unwrap();
-
-    json!({
-            "id": id,
-            "isbn": "1234567890",
-            "title": "Test",
-            "description": "Testcription",
-            "published": 2026
-    })
-}
+mod test_helpers;
+use test_helpers::{
+    Method, create_mock_payload, get_json_body, response, seed_mock_book, spawn_app,
+};
 
 #[sqlx::test(migrations = "tests/migrations")]
 async fn books_get_all_ok_empty_database(pool: PgPool) {
@@ -124,12 +50,7 @@ async fn books_get_id_ok_seeded_book(pool: PgPool) {
 
     assert_eq!(response.status(), StatusCode::OK);
 
-    let body = axum::body::to_bytes(response.into_body(), usize::MAX)
-        .await
-        .unwrap();
-
-    let body: Book = serde_json::from_slice(&body).unwrap();
-    let body = serde_json::to_value(&body).unwrap();
+    let body = get_json_body(response).await;
     assert_eq!(
         body,
         json!({
@@ -157,6 +78,18 @@ async fn books_post_ok(pool: PgPool) {
 
     let response = response(app, "/books", Method::Post(payload)).await;
     assert_eq!(response.status(), StatusCode::CREATED);
+
+    let body = get_json_body(response).await;
+    assert_eq!(
+        body,
+        json!({
+            "id": 3,
+            "isbn": "1234567890",
+            "title": "Test",
+            "description": "Testcription",
+            "published": 2026
+        })
+    );
 }
 
 #[sqlx::test(migrations = "tests/migrations")]
