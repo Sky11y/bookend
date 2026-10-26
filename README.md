@@ -39,6 +39,7 @@ This project...
 
 - **Docker** and **Docker compose**
 - Rust toolchain: **rustc** and **Cargo**)
+- **sqlx-cli**
 
 ### Installation
 
