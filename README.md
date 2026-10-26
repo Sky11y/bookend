@@ -29,6 +29,8 @@ This project...
 **Utilities**
 - **uuid** - Generating and parsing UUIDs
 - **thiserror** - Convenient derive macros for error handling
+- **tracing** - Scoped, structured, and async aware logging and instrumentation
+- **tracing-subscriber** - Tools for collecting and formatting tracing events
 - **dotenvy** - Environment variable loading
 
 ## Getting started
@@ -70,13 +72,24 @@ cp scripts/pre-commit .git/hooks/ && chmod +x .git/hooks/pre-commit
 ```sh
 docker compose up -d
 ```
-2. Run the server
+2. Run the migrations for the database
+```sh
+sqlx migrate run
+```
+3. Run the server
 ```sh
 # For development build
 cargo run
 # For release build
 cargo run --release
 ```
+
+**Optional**:
+Tracing is by default: `bookend=debug,tower_http=warn,sqlx=warn`. If you want for
+example more logging for the development build, use `RUST_LOG` build flag
+```sh
+RUST_LOG="bookend=debug,tower_http=debug,sqlx=trace" cargo run
+````
 
 **Stop the server and bring database down**
 1. Use Ctrl+c on the terminal to stop the server.

@@ -1,12 +1,11 @@
 use axum::{
     Json, Router,
     http::{StatusCode, Uri},
-    middleware::from_fn,
     response::IntoResponse,
 };
 use serde_json::json;
+use tower_http::trace::TraceLayer;
 
-use crate::error::log_app_errors;
 use crate::models::ModelController;
 use crate::web::routes_books::routes_books;
 
@@ -15,7 +14,7 @@ pub fn build_router(mc: ModelController) -> Router {
 
     Router::new()
         .nest("/books", book_routes)
-        .layer(from_fn(log_app_errors))
+        .layer(TraceLayer::new_for_http())
         .with_state(mc)
         .fallback(fallback)
 }
